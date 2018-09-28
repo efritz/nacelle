@@ -14,7 +14,8 @@ func TestMain(m *testing.M) {
 	sweet.Run(m, func(s *sweet.S) {
 		s.RegisterPlugin(junit.NewPlugin())
 
-		s.AddSuite(&EnvConfigSuite{})
+		s.AddSuite(&ConfigSuite{})
+		s.AddSuite(&EnvSourcerSuite{})
 		s.AddSuite(&LoggingConfigSuite{})
 	})
 }

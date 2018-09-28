@@ -1,8 +1,8 @@
 # Nacelle Config
 
-Out of the box, nacelle provides loading application configuration from the
-environment and injecting the values into an (initially zero-valued) struct
-requested by the application.
+Out of the box, nacelle provides loading application configuration from a
+configurable source and injecting the values into an (initially zero-valued)
+struct requested by the application.
 
 We use the following configuration struct as an example.
 
@@ -15,11 +15,11 @@ type Config struct {
 }
 ```
 
-When loading values from the environment, a missing value (or empty string)
+When pulling values from a variable source, a missing value (or empty string)
 will use the default value, if provided. If no value is set for a required
 configuration value, a fatal error will occur. String values will retrieve
-the environment value unaltered. All other field types will attempt to
-deserialize the environment value as JSON.
+the variable value unaltered. All other field types will attempt to unmarshal
+the variable value as JSON.
 
 Then, an initializer or a process that requires these config values can
 retrieve them in its `Init` method.
