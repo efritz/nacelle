@@ -14,6 +14,9 @@ type (
 var (
 	NewConfig           = config.NewConfig
 	NewEnvSourcer       = config.NewEnvSourcer
+	NewMapSourcer       = config.NewMapSourcer
+	NewYAMLFileSourcer  = config.NewYAMLFileSourcer
+	NewMultiSourcer     = config.NewMultiSourcer
 	NewEnvTagPrefixer   = tag.NewEnvTagPrefixer
 	NewDefaultTagSetter = tag.NewDefaultTagSetter
 )
