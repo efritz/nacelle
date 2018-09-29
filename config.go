@@ -16,6 +16,7 @@ var (
 	NewEnvSourcer       = config.NewEnvSourcer
 	NewMapSourcer       = config.NewMapSourcer
 	NewYAMLFileSourcer  = config.NewYAMLFileSourcer
+	NewConfigMapSourcer = config.NewConfigMapSourcer
 	NewMultiSourcer     = config.NewMultiSourcer
 	NewEnvTagPrefixer   = tag.NewEnvTagPrefixer
 	NewDefaultTagSetter = tag.NewDefaultTagSetter

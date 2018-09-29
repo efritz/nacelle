@@ -8,7 +8,7 @@ import (
 type MapSourcerSuite struct{}
 
 func (s *MapSourcerSuite) TestValues(t sweet.T) {
-	sourcer, err := NewMapSourcer(map[string]interface{}{
+	values := map[string]interface{}{
 		"foo": "bar",
 		"bar": []int{1, 2, 3},
 		"baz": nil,
@@ -17,9 +17,11 @@ func (s *MapSourcerSuite) TestValues(t sweet.T) {
 			"y": 2,
 			"z": 3,
 		},
-	})
+	}
 
+	sourcer, err := NewMapSourcer(values)
 	Expect(err).To(BeNil())
+
 	ensureEquals(sourcer, "foo", "bar")
 	ensureMatches(sourcer, "bar", "[1, 2, 3]")
 	ensureMatches(sourcer, "baz", "null")
