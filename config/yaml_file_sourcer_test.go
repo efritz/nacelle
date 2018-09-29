@@ -5,9 +5,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-type YAMLSourcerSuite struct{}
+type YAMLFileSourcerSuite struct{}
 
-func (s *YAMLSourcerSuite) TestLoadJSON(t sweet.T) {
+func (s *YAMLFileSourcerSuite) TestLoadJSON(t sweet.T) {
 	sourcer, err := NewYAMLFileSourcer("test-files/values.json")
 	Expect(err).To(BeNil())
 
@@ -18,7 +18,7 @@ func (s *YAMLSourcerSuite) TestLoadJSON(t sweet.T) {
 	ensureMatches(sourcer, "encoded", `{"w": 4}`)
 }
 
-func (s *YAMLSourcerSuite) TestLoadYAML(t sweet.T) {
+func (s *YAMLFileSourcerSuite) TestLoadYAML(t sweet.T) {
 	sourcer, err := NewYAMLFileSourcer("test-files/values.yaml")
 	Expect(err).To(BeNil())
 

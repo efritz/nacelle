@@ -20,7 +20,8 @@ func TestMain(m *testing.M) {
 		s.AddSuite(&LoggingConfigSuite{})
 		s.AddSuite(&MapSourcerSuite{})
 		s.AddSuite(&MultiSourcerSuite{})
-		s.AddSuite(&YAMLSourcerSuite{})
+		s.AddSuite(&TOMLFileSourcerSuite{})
+		s.AddSuite(&YAMLFileSourcerSuite{})
 	})
 }
 
