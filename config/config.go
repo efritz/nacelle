@@ -159,7 +159,14 @@ func loadEnvField(
 		return fmt.Errorf("field '%s' can not be set", fieldType.Name)
 	}
 
-	val, ok := sourcer(envTagValue, contextTagValue)
+	var path []string
+	if contextTagValue != "" {
+		path = append(strings.Split(contextTagValue, "."), envTagValue)
+	} else {
+		path = []string{envTagValue}
+	}
+
+	val, ok := sourcer(path)
 	if ok {
 		if !toJSON([]byte(val), fieldValue.Addr().Interface()) {
 			return fmt.Errorf("value supplied for field '%s' cannot be coerced into the expected type", fieldType.Name)

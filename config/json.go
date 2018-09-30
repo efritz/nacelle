@@ -33,18 +33,18 @@ func quoteJSON(data []byte) []byte {
 	return []byte(fmt.Sprintf(`"%s"`, replacer.Replace(string(data))))
 }
 
-func extractContext(val, context string) (string, bool) {
-	if context == "" {
+func extractContext(val string, path []string) (string, bool) {
+	if len(path) == 0 {
 		return val, true
 	}
 
-	for _, part := range strings.Split(context, ".") {
+	for _, segment := range path {
 		mapping := map[string]json.RawMessage{}
 		if err := json.Unmarshal([]byte(val), &mapping); err != nil {
 			return "", false
 		}
 
-		inner, ok := mapping[part]
+		inner, ok := mapping[segment]
 		if !ok {
 			return "", false
 		}

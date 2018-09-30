@@ -10,7 +10,16 @@ func (s *MultiSourcerSuite) TestMultiSourcerBasic(t sweet.T) {
 	s3, _ := NewMapSourcer(map[string]interface{}{"foo": "bonk"})
 	multi := NewMultiSourcer(s1, s2, s3)
 
-	ensureEquals(multi, "foo", "", "bar")
-	ensureEquals(multi, "bar", "", "baz")
-	ensureMissing(multi, "baz", "")
+	ensureEquals(multi, []string{"foo"}, "bar")
+	ensureEquals(multi, []string{"bar"}, "baz")
+	ensureMissing(multi, []string{"baz"})
+}
+
+func (s *MultiSourcerSuite) TestMultiSourcerContext(t sweet.T) {
+	s1, _ := NewMapSourcer(map[string]interface{}{"x": `{"y": {"w": 42}}`})
+	s2, _ := NewMapSourcer(map[string]interface{}{"x": `{"y": {"z": 42}}`})
+	s3, _ := NewMapSourcer(map[string]interface{}{"x": `{"y": {"z": "foo"}}`})
+	multi := NewMultiSourcer(s1, s2, s3)
+
+	ensureEquals(multi, []string{"x", "y", "z"}, "42")
 }

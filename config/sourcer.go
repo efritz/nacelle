@@ -4,4 +4,4 @@ package config
 // environment, a file, a remote server, etc. This can be done on-demand
 // per variable, or a cache of variables can be built on startup and then
 // pulled from a cached mapping as requested.
-type Sourcer func(envTagValue, contextTagValue string) (string, bool)
+type Sourcer func(path []string) (string, bool)

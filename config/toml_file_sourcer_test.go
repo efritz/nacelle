@@ -11,11 +11,11 @@ func (s *TOMLFileSourcerSuite) TestLoadTOML(t sweet.T) {
 	sourcer, err := NewTOMLFileSourcer("test-files/values.toml")
 	Expect(err).To(BeNil())
 
-	ensureEquals(sourcer, "foo", "", "bar")
-	ensureMatches(sourcer, "bar", "", "[1, 2, 3]")
-	ensureMissing(sourcer, "baz", "")
-	ensureMatches(sourcer, "bonk", "", `{"x": 1, "y": 2, "z": 3}`)
-	ensureMatches(sourcer, "encoded", "", `{"w": 4}`)
-	ensureMatches(sourcer, "bonk", "x", "1")
-	ensureMatches(sourcer, "encoded", "w", "4")
+	ensureEquals(sourcer, []string{"foo"}, "bar")
+	ensureMatches(sourcer, []string{"bar"}, "[1, 2, 3]")
+	ensureMissing(sourcer, []string{"baz"})
+	ensureMatches(sourcer, []string{"bonk"}, `{"x": 1, "y": 2, "z": 3}`)
+	ensureMatches(sourcer, []string{"encoded"}, `{"w": 4}`)
+	ensureMatches(sourcer, []string{"bonk", "x"}, "1")
+	ensureMatches(sourcer, []string{"encoded", "w"}, "4")
 }

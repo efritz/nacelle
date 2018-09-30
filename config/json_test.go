@@ -37,23 +37,23 @@ func (s *JSONSuite) TestQuoteJSON(t sweet.T) {
 }
 
 func (s *JSONSuite) TestExtractContext(t sweet.T) {
-	inner, ok := extractContext(`{"points": {"x": 1, "y": 2, "z": 3}}`, "points")
+	inner, ok := extractContext(`{"points": {"x": 1, "y": 2, "z": 3}}`, []string{"points"})
 	Expect(ok).To(BeTrue())
 	Expect(inner).To(MatchJSON(`{"x": 1, "y": 2, "z": 3}`))
 }
 
 func (s *JSONSuite) TestExtractContextNested(t sweet.T) {
-	inner, ok := extractContext(`{"a": {"b": {"c": {"x": 1, "y": 2, "z": 3}}}}`, "a.b.c")
+	inner, ok := extractContext(`{"a": {"b": {"c": {"x": 1, "y": 2, "z": 3}}}}`, []string{"a", "b", "c"})
 	Expect(ok).To(BeTrue())
 	Expect(inner).To(MatchJSON(`{"x": 1, "y": 2, "z": 3}`))
 }
 
 func (s *JSONSuite) TestExtractContextMissing(t sweet.T) {
-	_, ok := extractContext(`{"b": {"x": 1, "y": 2, "z": 3}}`, "a")
+	_, ok := extractContext(`{"b": {"x": 1, "y": 2, "z": 3}}`, []string{"a"})
 	Expect(ok).To(BeFalse())
 }
 func (s *JSONSuite) TestExtractContextNoContext(t sweet.T) {
-	inner, ok := extractContext(` {"x": 1, "y": 2, "z": 3}`, "")
+	inner, ok := extractContext(` {"x": 1, "y": 2, "z": 3}`, nil)
 	Expect(ok).To(BeTrue())
 	Expect(inner).To(MatchJSON(`{"x": 1, "y": 2, "z": 3}`))
 }
