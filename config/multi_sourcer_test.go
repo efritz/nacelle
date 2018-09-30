@@ -10,7 +10,7 @@ func (s *MultiSourcerSuite) TestMultiSourcerBasic(t sweet.T) {
 	s3, _ := NewMapSourcer(map[string]interface{}{"foo": "bonk"})
 	multi := NewMultiSourcer(s1, s2, s3)
 
-	ensureEquals(multi, "foo", "bar")
-	ensureEquals(multi, "bar", "baz")
-	ensureMissing(multi, "baz")
+	ensureEquals(multi, "foo", "", "bar")
+	ensureEquals(multi, "bar", "", "baz")
+	ensureMissing(multi, "baz", "")
 }

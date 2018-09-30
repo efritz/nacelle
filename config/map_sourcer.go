@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// NewMapSourcer creates a sourcer that reads kesy from the given map of
+// NewMapSourcer creates a sourcer that reads keys from the given map of
 // interface values. Partially due to the way defaults are implemented,
 // all config map values must be JSON-serializable - for configuration
 // data, this is a reasonable requirement. This requirement also extends
@@ -21,9 +21,13 @@ func NewMapSourcer(values map[string]interface{}) (Sourcer, error) {
 		jsonValues[key] = serialized
 	}
 
-	return func(envTag string) (string, bool) {
-		val, ok := jsonValues[envTag]
-		return val, ok
+	return func(env, context string) (string, bool) {
+		val, ok := jsonValues[env]
+		if !ok {
+			return "", false
+		}
+
+		return extractContext(val, context)
 	}, nil
 }
 

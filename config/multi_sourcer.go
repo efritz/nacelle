@@ -4,9 +4,9 @@ package config
 // sequentially until a suitable value is found. A value found in
 // a sourcer earlier in the list will override any later values.
 func NewMultiSourcer(sourcers ...Sourcer) Sourcer {
-	return func(envTag string) (string, bool) {
+	return func(env, context string) (string, bool) {
 		for _, sourcer := range sourcers {
-			if val, ok := sourcer(envTag); ok {
+			if val, ok := sourcer(env, context); ok {
 				return val, ok
 			}
 		}

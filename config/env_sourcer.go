@@ -7,15 +7,7 @@ import (
 	"strings"
 )
 
-var (
-	replacer = strings.NewReplacer(
-		"\n", `\n`,
-		"\t", `\t`,
-		"\r", `\r`,
-	)
-
-	replacePattern = regexp.MustCompile(`[^A-Za-z0-9_]+`)
-)
+var replacePattern = regexp.MustCompile(`[^A-Za-z0-9_]+`)
 
 // NewEnvSourcer creates a Sourcer that pulls values from the environment.
 // the {PREFIX}_{NAME} envvar is read before falling back to the {NAME} envvar.
@@ -30,15 +22,17 @@ func NewEnvSourcer(prefix string) Sourcer {
 		"_",
 	)
 
-	return func(envTagValue string) (string, bool) {
-		envTags := []string{
-			strings.ToUpper(fmt.Sprintf("%s_%s", prefix, envTagValue)),
-			strings.ToUpper(envTagValue),
+	return func(env, context string) (string, bool) {
+		envvars := []string{
+			strings.ToUpper(fmt.Sprintf("%s_%s", prefix, env)),
+			strings.ToUpper(env),
 		}
 
-		for _, envTag := range envTags {
-			if val, ok := os.LookupEnv(envTag); ok {
-				return val, ok
+		for _, envvar := range envvars {
+			if val, ok := os.LookupEnv(envvar); ok {
+				if inner, ok := extractContext(val, context); ok {
+					return inner, ok
+				}
 			}
 		}
 
