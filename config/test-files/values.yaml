@@ -10,3 +10,9 @@ bonk:
   z: 3
 encoded: |
   {"w": 4}
+deeply:
+  nested:
+    struct:
+      - 1
+      - 2
+      - 3

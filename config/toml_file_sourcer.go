@@ -21,5 +21,5 @@ func NewTOMLFileSourcer(path string) (Sourcer, error) {
 		return nil, fmt.Errorf("failed to unmarhsal TOML config (%s)", err.Error())
 	}
 
-	return NewMapSourcer(values)
+	return newFileContentSourcer(values)
 }

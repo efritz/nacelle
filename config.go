@@ -14,7 +14,6 @@ type (
 var (
 	NewConfig           = config.NewConfig
 	NewEnvSourcer       = config.NewEnvSourcer
-	NewMapSourcer       = config.NewMapSourcer
 	NewYAMLFileSourcer  = config.NewYAMLFileSourcer
 	NewTOMLFileSourcer  = config.NewTOMLFileSourcer
 	NewMultiSourcer     = config.NewMultiSourcer

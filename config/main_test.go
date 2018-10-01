@@ -18,7 +18,6 @@ func TestMain(m *testing.M) {
 		s.AddSuite(&EnvSourcerSuite{})
 		s.AddSuite(&JSONSuite{})
 		s.AddSuite(&LoggingConfigSuite{})
-		s.AddSuite(&MapSourcerSuite{})
 		s.AddSuite(&MultiSourcerSuite{})
 		s.AddSuite(&TOMLFileSourcerSuite{})
 		s.AddSuite(&YAMLFileSourcerSuite{})
@@ -28,19 +27,19 @@ func TestMain(m *testing.M) {
 //
 //
 
-func ensureEquals(sourcer Sourcer, key string, expected string) {
-	val, ok := sourcer(key)
+func ensureEquals(sourcer Sourcer, values []string, expected string) {
+	val, _, ok := sourcer.Get(values)
 	Expect(ok).To(BeTrue())
 	Expect(val).To(Equal(expected))
 }
 
-func ensureMatches(sourcer Sourcer, key string, expected string) {
-	val, ok := sourcer(key)
+func ensureMatches(sourcer Sourcer, values []string, expected string) {
+	val, _, ok := sourcer.Get(values)
 	Expect(ok).To(BeTrue())
 	Expect(val).To(MatchJSON(expected))
 }
 
-func ensureMissing(sourcer Sourcer, key string) {
-	_, ok := sourcer(key)
+func ensureMissing(sourcer Sourcer, values []string) {
+	_, _, ok := sourcer.Get(values)
 	Expect(ok).To(BeFalse())
 }

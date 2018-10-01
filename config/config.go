@@ -108,7 +108,6 @@ func (c *config) loadStruct(objValue reflect.Value, objType reflect.Type) []erro
 		var (
 			field            = objValue.Field(i)
 			fieldType        = objType.Field(i)
-			envTagValue      = fieldType.Tag.Get(envTag)
 			defaultTagValue  = fieldType.Tag.Get(defaultTag)
 			requiredTagValue = fieldType.Tag.Get(requiredTag)
 		)
@@ -118,15 +117,15 @@ func (c *config) loadStruct(objValue reflect.Value, objType reflect.Type) []erro
 			continue
 		}
 
-		if envTagValue == "" {
-			continue
+		tagValues := []string{}
+		for _, tag := range c.sourcer.Tags() {
+			tagValues = append(tagValues, fieldType.Tag.Get(tag))
 		}
 
-		err := loadEnvField(
-			c.sourcer,
+		err := c.loadEnvField(
 			field,
-			fieldType,
-			envTagValue,
+			fieldType.Name,
+			tagValues,
 			defaultTagValue,
 			requiredTagValue,
 		)
@@ -139,26 +138,29 @@ func (c *config) loadStruct(objValue reflect.Value, objType reflect.Type) []erro
 	return errors
 }
 
-func loadEnvField(
-	sourcer Sourcer,
+func (c *config) loadEnvField(
 	fieldValue reflect.Value,
-	fieldType reflect.StructField,
-	envTagValue string,
+	name string,
+	tagValues []string,
 	defaultTag string,
 	requiredTag string,
 ) error {
+	val, skip, ok := c.sourcer.Get(tagValues)
+	if skip {
+		return nil
+	}
+
 	if !fieldValue.IsValid() {
-		return fmt.Errorf("field '%s' is invalid", fieldType.Name)
+		return fmt.Errorf("field '%s' is invalid", name)
 	}
 
 	if !fieldValue.CanSet() {
-		return fmt.Errorf("field '%s' can not be set", fieldType.Name)
+		return fmt.Errorf("field '%s' can not be set", name)
 	}
 
-	val, ok := sourcer(envTagValue)
 	if ok {
 		if !toJSON([]byte(val), fieldValue.Addr().Interface()) {
-			return fmt.Errorf("value supplied for field '%s' cannot be coerced into the expected type", fieldType.Name)
+			return fmt.Errorf("value supplied for field '%s' cannot be coerced into the expected type", name)
 		}
 
 		return nil
@@ -167,17 +169,25 @@ func loadEnvField(
 	if requiredTag != "" {
 		val, err := strconv.ParseBool(requiredTag)
 		if err != nil {
-			return fmt.Errorf("field '%s' has an invalid required tag", fieldType.Name)
+			return fmt.Errorf("field '%s' has an invalid required tag", name)
 		}
 
 		if val {
-			return fmt.Errorf("no value supplied for field '%s'", fieldType.Name)
+			return fmt.Errorf("no value supplied for field '%s'", name)
 		}
 	}
 
 	if defaultTag != "" {
+		if !fieldValue.IsValid() {
+			return fmt.Errorf("field '%s' is invalid", name)
+		}
+
+		if !fieldValue.CanSet() {
+			return fmt.Errorf("field '%s' can not be set", name)
+		}
+
 		if !toJSON([]byte(defaultTag), fieldValue.Addr().Interface()) {
-			return fmt.Errorf("default value for field '%s' cannot be coerced into the expected type", fieldType.Name)
+			return fmt.Errorf("default value for field '%s' cannot be coerced into the expected type", name)
 		}
 
 		return nil
@@ -185,6 +195,9 @@ func loadEnvField(
 
 	return nil
 }
+
+//
+// Helpers
 
 func loadError(errors []error) error {
 	if len(errors) == 0 {

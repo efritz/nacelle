@@ -7,12 +7,18 @@ import (
 	"strings"
 )
 
+type envSourcer struct {
+	prefix string
+}
+
 var replacePattern = regexp.MustCompile(`[^A-Za-z0-9_]+`)
 
 // NewEnvSourcer creates a Sourcer that pulls values from the environment.
-// the {PREFIX}_{NAME} envvar is read before falling back to the {NAME} envvar.
-// The prefix will be normalized (replaces all non-alpha characters with an
-// underscore and trims leading, trailing, and collapses consecutive underscores).
+// The environment variable {PREFIX}_{NAME} is read before and, if empty,
+// the environment varaible {NAME} is read as a fallback. The prefix is
+// normalized by replacing all non-alpha characters with an underscore,
+// removing leading and trailing underscores, and collapsing consecutive
+// underscores with a single character.
 func NewEnvSourcer(prefix string) Sourcer {
 	prefix = strings.Trim(
 		string(replacePattern.ReplaceAll(
@@ -22,18 +28,28 @@ func NewEnvSourcer(prefix string) Sourcer {
 		"_",
 	)
 
-	return func(path string) (string, bool) {
-		envvars := []string{
-			strings.ToUpper(fmt.Sprintf("%s_%s", prefix, path)),
-			strings.ToUpper(path),
-		}
+	return &envSourcer{prefix: prefix}
+}
 
-		for _, envvar := range envvars {
-			if val, ok := os.LookupEnv(envvar); ok {
-				return val, true
-			}
-		}
+func (s *envSourcer) Tags() []string {
+	return []string{"env"}
+}
 
-		return "", false
+func (s *envSourcer) Get(values []string) (string, bool, bool) {
+	if values[0] == "" {
+		return "", true, false
 	}
+
+	envvars := []string{
+		strings.ToUpper(fmt.Sprintf("%s_%s", s.prefix, values[0])),
+		strings.ToUpper(values[0]),
+	}
+
+	for _, envvar := range envvars {
+		if val, ok := os.LookupEnv(envvar); ok {
+			return val, false, true
+		}
+	}
+
+	return "", false, false
 }

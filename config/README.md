@@ -61,23 +61,48 @@ struct tags.
 
 ```go
 type (
-    BaseConfig struct{
+    BaseConfig struct {
         X string `env:"X"`
         Y string `env:"Y"`
         Z string `env:"Z"`
     }
 
-    ProducerConfig struct{
+    ProducerConfig struct {
         BaseConfig
         W string `env:"W"`
     }
 
-    ConsumerConfig struct{
+    ConsumerConfig struct {
         BaseConfig
         Q string `env:"Q"`
 
     }
 )
+```
+
+## Sources
+
+By default, the nacelle bootstrapper uses the environment as the source for
+configuration data. You can alternatively supply a Sourcer which pulls from
+values from a different source (file, network, etc).
+
+The following struct loads a variable `X` from the environment or loads the
+path `a.b.c` from a configuration file (this assumes the configuration file
+contains a nested dictionary structure with the path `a.b.c`).
+
+```go
+type Config struct {
+    X string `env:"x" file:"a.b.c"`
+}
+```
+
+This scenario also assumes the following option is given to the bootstrapper.
+
+```go
+WithConfigSourcer(NewMultiSourcer(
+    NewEnvSourcer("APP"),
+    NewYAMLFileSourcer("config.yaml"),
+))
 ```
 
 ## Config Tags
