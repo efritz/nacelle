@@ -12,12 +12,6 @@ type (
 		Z []string `env:"w" display:"Q"`
 	}
 
-	TestContextConfig struct {
-		X string   `env:"x" context:"a.b.c"`
-		Y int      `env:"y" context:"a.b"`
-		Z []string `env:"w" context:"a"`
-	}
-
 	TestEmbeddedJSONConfig struct {
 		P1 *TestJSONPayload `env:"p1"`
 		P2 *TestJSONPayload `env:"p2"`

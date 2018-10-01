@@ -43,7 +43,6 @@ type (
 
 const (
 	envTag      = "env"
-	contextTag  = "context"
 	defaultTag  = "default"
 	requiredTag = "required"
 )
@@ -110,7 +109,6 @@ func (c *config) loadStruct(objValue reflect.Value, objType reflect.Type) []erro
 			field            = objValue.Field(i)
 			fieldType        = objType.Field(i)
 			envTagValue      = fieldType.Tag.Get(envTag)
-			contextTagValue  = fieldType.Tag.Get(contextTag)
 			defaultTagValue  = fieldType.Tag.Get(defaultTag)
 			requiredTagValue = fieldType.Tag.Get(requiredTag)
 		)
@@ -129,7 +127,6 @@ func (c *config) loadStruct(objValue reflect.Value, objType reflect.Type) []erro
 			field,
 			fieldType,
 			envTagValue,
-			contextTagValue,
 			defaultTagValue,
 			requiredTagValue,
 		)
@@ -147,7 +144,6 @@ func loadEnvField(
 	fieldValue reflect.Value,
 	fieldType reflect.StructField,
 	envTagValue string,
-	contextTagValue string,
 	defaultTag string,
 	requiredTag string,
 ) error {
@@ -159,14 +155,7 @@ func loadEnvField(
 		return fmt.Errorf("field '%s' can not be set", fieldType.Name)
 	}
 
-	var path []string
-	if contextTagValue != "" {
-		path = append(strings.Split(contextTagValue, "."), envTagValue)
-	} else {
-		path = []string{envTagValue}
-	}
-
-	val, ok := sourcer(path)
+	val, ok := sourcer(envTagValue)
 	if ok {
 		if !toJSON([]byte(val), fieldValue.Addr().Interface()) {
 			return fmt.Errorf("value supplied for field '%s' cannot be coerced into the expected type", fieldType.Name)

@@ -28,19 +28,19 @@ func TestMain(m *testing.M) {
 //
 //
 
-func ensureEquals(sourcer Sourcer, path []string, expected string) {
-	val, ok := sourcer(path)
+func ensureEquals(sourcer Sourcer, key string, expected string) {
+	val, ok := sourcer(key)
 	Expect(ok).To(BeTrue())
 	Expect(val).To(Equal(expected))
 }
 
-func ensureMatches(sourcer Sourcer, path []string, expected string) {
-	val, ok := sourcer(path)
+func ensureMatches(sourcer Sourcer, key string, expected string) {
+	val, ok := sourcer(key)
 	Expect(ok).To(BeTrue())
 	Expect(val).To(MatchJSON(expected))
 }
 
-func ensureMissing(sourcer Sourcer, path []string) {
-	_, ok := sourcer(path)
+func ensureMissing(sourcer Sourcer, key string) {
+	_, ok := sourcer(key)
 	Expect(ok).To(BeFalse())
 }

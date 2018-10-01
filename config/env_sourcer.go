@@ -22,17 +22,15 @@ func NewEnvSourcer(prefix string) Sourcer {
 		"_",
 	)
 
-	return func(path []string) (string, bool) {
+	return func(path string) (string, bool) {
 		envvars := []string{
-			strings.ToUpper(fmt.Sprintf("%s_%s", prefix, path[0])),
-			strings.ToUpper(path[0]),
+			strings.ToUpper(fmt.Sprintf("%s_%s", prefix, path)),
+			strings.ToUpper(path),
 		}
 
 		for _, envvar := range envvars {
 			if val, ok := os.LookupEnv(envvar); ok {
-				if inner, ok := extractContext(val, path[1:]); ok {
-					return inner, ok
-				}
+				return val, true
 			}
 		}
 

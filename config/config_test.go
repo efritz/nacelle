@@ -32,26 +32,6 @@ func (s *ConfigSuite) TestSimpleConfig(t sweet.T) {
 	Expect(chunk.Z).To(Equal([]string{"bar", "baz", "bonk"}))
 }
 
-func (s *ConfigSuite) TestContext(t sweet.T) {
-	var (
-		config = NewConfig(NewEnvSourcer("app"))
-		chunk  = &TestContextConfig{}
-	)
-
-	os.Setenv("APP_A", `{
-		"b": {
-			"c": {"x": "foo"},
-			"y": 123
-		},
-		"w": ["bar", "baz", "bonk"]
-	}`)
-
-	Expect(config.Load(chunk)).To(BeNil())
-	Expect(chunk.X).To(Equal("foo"))
-	Expect(chunk.Y).To(Equal(123))
-	Expect(chunk.Z).To(Equal([]string{"bar", "baz", "bonk"}))
-}
-
 func (s *ConfigSuite) TestNestedJSONDeserialization(t sweet.T) {
 	var (
 		config = NewConfig(NewEnvSourcer("app"))

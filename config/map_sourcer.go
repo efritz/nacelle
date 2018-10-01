@@ -21,13 +21,12 @@ func NewMapSourcer(values map[string]interface{}) (Sourcer, error) {
 		jsonValues[key] = serialized
 	}
 
-	return func(path []string) (string, bool) {
-		val, ok := jsonValues[path[0]]
-		if !ok {
-			return "", false
+	return func(path string) (string, bool) {
+		if val, ok := jsonValues[path]; ok {
+			return val, true
 		}
 
-		return extractContext(val, path[1:])
+		return "", false
 	}, nil
 }
 
