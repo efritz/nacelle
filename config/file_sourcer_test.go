@@ -42,6 +42,12 @@ func (s *FileSourcerSuite) TestLoadTOMLNoParser(t sweet.T) {
 	testFileSourcer(sourcer)
 }
 
+func (s *FileSourcerSuite) TestOptionalFileSourcer(t sweet.T) {
+	sourcer, err := NewOptionalFileSourcer("test-files/no-such-file.json", nil)
+	Expect(err).To(BeNil())
+	ensureMissing(sourcer, []string{"foo"})
+}
+
 func testFileSourcer(sourcer Sourcer) {
 	ensureEquals(sourcer, []string{"foo"}, "bar")
 	ensureMatches(sourcer, []string{"bar"}, "[1, 2, 3]")

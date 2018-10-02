@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -24,6 +25,17 @@ var ParserMap = map[string]FileParser{
 	".yml":  ParseYAML,
 	".json": ParseYAML,
 	".toml": ParseTOML,
+}
+
+// NewOptionalFileSourcer create a file sourcer if the provided file exists. If
+// the provided file is not found, a sourcer is returned returns no values.
+func NewOptionalFileSourcer(filename string, parser FileParser) (Sourcer, error) {
+	_, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return &fileSourcer{values: map[string]string{}}, nil
+	}
+
+	return NewFileSourcer(filename, parser)
 }
 
 // NewFileSourcer creates a sourcer that reads content from a file. The format
