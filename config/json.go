@@ -32,25 +32,3 @@ func toJSON(data []byte, v interface{}) bool {
 func quoteJSON(data []byte) []byte {
 	return []byte(fmt.Sprintf(`"%s"`, replacer.Replace(string(data))))
 }
-
-func extractContext(val string, path []string) (string, bool) {
-	if len(path) == 0 {
-		return val, true
-	}
-
-	for _, segment := range path {
-		mapping := map[string]json.RawMessage{}
-		if err := json.Unmarshal([]byte(val), &mapping); err != nil {
-			return "", false
-		}
-
-		inner, ok := mapping[segment]
-		if !ok {
-			return "", false
-		}
-
-		val = string(inner)
-	}
-
-	return val, true
-}
