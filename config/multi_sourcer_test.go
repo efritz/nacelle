@@ -31,7 +31,7 @@ func (s *MultiSourcerSuite) TestMultiSourcerBasic(t sweet.T) {
 		return "", false, false
 	}
 
-	multi := NewMultiSourcer(s1, s2)
+	multi := NewMultiSourcer(s2, s1)
 	ensureEquals(multi, []string{"foo"}, "bar")
 	ensureEquals(multi, []string{"bar"}, "baz")
 	ensureMissing(multi, []string{"baz"})
@@ -51,7 +51,7 @@ func (s *MultiSourcerSuite) TestMultiSourcerPriority(t sweet.T) {
 		return "baz", false, true
 	}
 
-	multi := NewMultiSourcer(s1, s2)
+	multi := NewMultiSourcer(s2, s1)
 	ensureEquals(multi, []string{"foo"}, "bar")
 }
 
@@ -67,7 +67,7 @@ func (s *MultiSourcerSuite) TestMultiSourcerTags(t sweet.T) {
 	s4.TagsFunc = func() []string { return []string{"a", "b", "d"} }
 	s5.TagsFunc = func() []string { return []string{"e"} }
 
-	multi := NewMultiSourcer(s1, s2, s3, s4, s5)
+	multi := NewMultiSourcer(s5, s4, s3, s2, s1)
 	tags := multi.Tags()
 	Expect(tags).To(HaveLen(5))
 	Expect(tags).To(ConsistOf("a", "b", "c", "d", "e"))
@@ -96,7 +96,7 @@ func (s *MultiSourcerSuite) TestMultiSourcerDifferentTags(t sweet.T) {
 		return "", false, false
 	}
 
-	multi := NewMultiSourcer(s1, s2, s3)
+	multi := NewMultiSourcer(s3, s2, s1)
 	_, skip, ok := multi.Get([]string{"foo", "bar"})
 	Expect(ok).To(BeFalse())
 	Expect(skip).To(BeFalse())
@@ -125,7 +125,7 @@ func (s *MultiSourcerSuite) TestMultiSourceSkip(t sweet.T) {
 		return "", true, false
 	}
 
-	multi := NewMultiSourcer(s1, s2, s3)
+	multi := NewMultiSourcer(s3, s2, s1)
 	_, skip, ok := multi.Get([]string{"", ""})
 	Expect(ok).To(BeFalse())
 	Expect(skip).To(BeTrue())

@@ -7,9 +7,9 @@ type multiSourcer struct {
 	tags     []string
 }
 
-// NewMultiSourcer creates a sourcer that reads form each sourcer
-// sequentially until a suitable value is found. A value found in
-// a sourcer earlier in the list will override any later values.
+// NewMultiSourcer creates a sourcer that reads form each sourcer.
+// The last value found is returned - sourcers should be provided
+// from low priority to high priority.
 func NewMultiSourcer(sourcers ...Sourcer) Sourcer {
 	set := map[string]struct{}{}
 	for _, sourcer := range sourcers {
@@ -42,7 +42,9 @@ func (s *multiSourcer) Get(values []string) (string, bool, bool) {
 	}
 
 	skip := true
-	for _, sourcer := range s.sourcers {
+	for i := len(s.sourcers) - 1; i >= 0; i-- {
+		sourcer := s.sourcers[i]
+
 		sourcerValues := []string{}
 		for _, tag := range sourcer.Tags() {
 			sourcerValues = append(sourcerValues, correlation[tag])
