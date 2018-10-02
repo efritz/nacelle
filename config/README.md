@@ -100,8 +100,8 @@ This scenario also assumes the following option is given to the bootstrapper.
 
 ```go
 WithConfigSourcer(NewMultiSourcer(
-    NewEnvSourcer("APP"),
     NewYAMLFileSourcer("config.yaml"),
+    NewEnvSourcer("APP"),
 ))
 ```
 

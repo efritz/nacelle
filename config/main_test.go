@@ -19,8 +19,7 @@ func TestMain(m *testing.M) {
 		s.AddSuite(&JSONSuite{})
 		s.AddSuite(&LoggingConfigSuite{})
 		s.AddSuite(&MultiSourcerSuite{})
-		s.AddSuite(&TOMLFileSourcerSuite{})
-		s.AddSuite(&YAMLFileSourcerSuite{})
+		s.AddSuite(&FileSourcerSuite{})
 	})
 }
 
