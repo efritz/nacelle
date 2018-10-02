@@ -50,7 +50,7 @@ func NewYAMLFileSourcer(filename string) (Sourcer, error) {
 	return NewFileSourcer(filename, ParseYAML)
 }
 
-// NewJSONFileSourcer creates a file sourcer that parses conent as TOML.
+// NewTOMLFileSourcer creates a file sourcer that parses conent as TOML.
 func NewTOMLFileSourcer(filename string) (Sourcer, error) {
 	return NewFileSourcer(filename, ParseTOML)
 }
