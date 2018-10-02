@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -19,49 +20,26 @@ type (
 )
 
 var ParserMap = map[string]FileParser{
-	"yaml": ParseYAML,
-	"yml":  ParseYAML,
-	"json": ParseYAML,
-	"toml": ParseTOML,
-}
-
-// ParseYAML parses the given content as YAML.
-func ParseYAML(content []byte) (map[string]interface{}, error) {
-	values := map[string]interface{}{}
-	if err := yaml.Unmarshal(content, &values); err != nil {
-		return nil, fmt.Errorf("failed to unmarhsal YAML config (%s)", err.Error())
-	}
-
-	return values, nil
-}
-
-// ParseTOML parses the given content as JSON.
-func ParseTOML(content []byte) (map[string]interface{}, error) {
-	values := map[string]interface{}{}
-	if err := toml.Unmarshal(content, &values); err != nil {
-		return nil, fmt.Errorf("failed to unmarhsal TOML config (%s)", err.Error())
-	}
-
-	return values, nil
-}
-
-// NewYAMLFileSourcer creates a file sourcer that parses conent as YAML.
-func NewYAMLFileSourcer(filename string) (Sourcer, error) {
-	return NewFileSourcer(filename, ParseYAML)
-}
-
-// NewTOMLFileSourcer creates a file sourcer that parses conent as TOML.
-func NewTOMLFileSourcer(filename string) (Sourcer, error) {
-	return NewFileSourcer(filename, ParseTOML)
+	".yaml": ParseYAML,
+	".yml":  ParseYAML,
+	".json": ParseYAML,
+	".toml": ParseTOML,
 }
 
 // NewFileSourcer creates a sourcer that reads content from a file. The format
 // of the file is read by the given FileParser. The content of the file must be
-// an encoding of a map from string keys to JSON-serializable values.
+// an encoding of a map from string keys to JSON-serializable values. If a nil
+// parser is supplied, one will be selected based on the extension of the file.
+// JSON, YAML, and TOML files are supported.
 func NewFileSourcer(filename string, parser FileParser) (Sourcer, error) {
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file '%s' (%s)", filename, err.Error())
+	}
+
+	parser, err = chooseParser(filename, parser)
+	if err != nil {
+		return nil, err
 	}
 
 	values, err := parser(content)
@@ -103,7 +81,52 @@ func (s *fileSourcer) Get(values []string) (string, bool, bool) {
 }
 
 //
+// Parsers
+
+// ParseYAML parses the given content as YAML.
+func ParseYAML(content []byte) (map[string]interface{}, error) {
+	values := map[string]interface{}{}
+	if err := yaml.Unmarshal(content, &values); err != nil {
+		return nil, fmt.Errorf("failed to unmarhsal YAML config (%s)", err.Error())
+	}
+
+	return values, nil
+}
+
+// ParseTOML parses the given content as JSON.
+func ParseTOML(content []byte) (map[string]interface{}, error) {
+	values := map[string]interface{}{}
+	if err := toml.Unmarshal(content, &values); err != nil {
+		return nil, fmt.Errorf("failed to unmarhsal TOML config (%s)", err.Error())
+	}
+
+	return values, nil
+}
+
+// NewYAMLFileSourcer creates a file sourcer that parses conent as YAML.
+func NewYAMLFileSourcer(filename string) (Sourcer, error) {
+	return NewFileSourcer(filename, ParseYAML)
+}
+
+// NewTOMLFileSourcer creates a file sourcer that parses conent as TOML.
+func NewTOMLFileSourcer(filename string) (Sourcer, error) {
+	return NewFileSourcer(filename, ParseTOML)
+}
+
+//
 // Helpers
+
+func chooseParser(filename string, parser FileParser) (FileParser, error) {
+	if parser != nil {
+		return parser, nil
+	}
+
+	if parser, ok := ParserMap[filepath.Ext(filename)]; ok {
+		return parser, nil
+	}
+
+	return nil, fmt.Errorf("failed to determine parser for file %s", filename)
+}
 
 func serializeJSONValue(value interface{}) (string, error) {
 	if str, ok := value.(string); ok {
