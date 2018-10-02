@@ -20,7 +20,7 @@ type (
 	FileParser func(content []byte) (map[string]interface{}, error)
 )
 
-var ParserMap = map[string]FileParser{
+var parserMap = map[string]FileParser{
 	".yaml": ParseYAML,
 	".yml":  ParseYAML,
 	".json": ParseYAML,
@@ -97,19 +97,20 @@ func (s *fileSourcer) Get(values []string) (string, bool, bool) {
 
 // ParseYAML parses the given content as YAML.
 func ParseYAML(content []byte) (map[string]interface{}, error) {
-	values := map[string]interface{}{}
-	if err := yaml.Unmarshal(content, &values); err != nil {
-		return nil, fmt.Errorf("failed to unmarhsal YAML config (%s)", err.Error())
-	}
-
-	return values, nil
+	return commonParser(content, func(content []byte, values interface{}) error {
+		return yaml.Unmarshal(content, values)
+	})
 }
 
 // ParseTOML parses the given content as JSON.
 func ParseTOML(content []byte) (map[string]interface{}, error) {
+	return commonParser(content, toml.Unmarshal)
+}
+
+func commonParser(content []byte, unmarshaller func([]byte, interface{}) error) (map[string]interface{}, error) {
 	values := map[string]interface{}{}
-	if err := toml.Unmarshal(content, &values); err != nil {
-		return nil, fmt.Errorf("failed to unmarhsal TOML config (%s)", err.Error())
+	if err := unmarshaller(content, &values); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal config (%s)", err.Error())
 	}
 
 	return values, nil
@@ -133,7 +134,7 @@ func chooseParser(filename string, parser FileParser) (FileParser, error) {
 		return parser, nil
 	}
 
-	if parser, ok := ParserMap[filepath.Ext(filename)]; ok {
+	if parser, ok := parserMap[filepath.Ext(filename)]; ok {
 		return parser, nil
 	}
 
