@@ -348,7 +348,7 @@ func (r *runner) finalizeWithTimeout(initializer namedFinalizer) error {
 		return r.finalize(initializer)
 	})
 
-	finalizeTimeoutChan:=r.makeTimeoutChan(initializer.FinalizeTimeout())
+	finalizeTimeoutChan := r.makeTimeoutChan(initializer.FinalizeTimeout())
 
 	select {
 	case err := <-errChan:
