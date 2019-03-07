@@ -17,7 +17,7 @@ type (
 	// Finalizer is an optional extension of an Initializer that
 	// supports finalization. This is useful for initializers
 	// that need to tear down a background process before the
-	// process exits, but needs to be started arly in the boot
+	// process exits, but needs to be started early in the boot
 	// process (such as flushing logs or metrics).
 	Finalizer interface {
 		// Finalize is called after the application has stopped
