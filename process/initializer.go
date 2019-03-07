@@ -20,7 +20,7 @@ type (
 	// process exits, but needs to be started arly in the boot
 	// process (such as flushing logs or metrics).
 	Finalizer interface {
-		// Finalize is called afterr the application has stopped
+		// Finalize is called after the application has stopped
 		// all running processes.
 		Finalize() error
 	}
