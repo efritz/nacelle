@@ -88,7 +88,7 @@ func NewRunner(
 	// per started process plus one finalizer error per initializer.
 	// Make the output channel buffer as large as the maximum number
 	// of errors.
-	maxErrs := processes.NumProcesses()*2 + processes.NumInitializers()+ 1
+	maxErrs := processes.NumInitializers() + processes.NumProcesses()*2 + 1
 
 	errChan := make(chan errMeta)
 	outChan := make(chan error, maxErrs)
