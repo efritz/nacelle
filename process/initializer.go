@@ -14,6 +14,17 @@ type (
 		Init(config config.Config) error
 	}
 
+	// Finalizer is an optional extension of an Initializer that
+	// supports finalization. This is useful for initializers
+	// that need to tear down a background process before the
+	// process exits, but needs to be started arly in the boot
+	// process (such as flushing logs or metrics).
+	Finalizer interface {
+		// Finalize is called afterr the application has stopped
+		// all running processes.
+		Finalize() error
+	}
+
 	// InitializerFunc is a non-struct version of an initializer.
 	InitializerFunc func(config config.Config) error
 )
