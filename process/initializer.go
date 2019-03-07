@@ -3,7 +3,7 @@ package process
 import "github.com/efritz/nacelle/config"
 
 type (
-	// Initializer is an object that is called once on app
+	// Initializer is an interface that is called once on app
 	// startup.
 	Initializer interface {
 		// Init reads the given configuration and prepares
